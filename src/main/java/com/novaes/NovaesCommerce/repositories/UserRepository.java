@@ -7,6 +7,7 @@ package com.novaes.NovaesCommerce.repositories;
 import com.novaes.NovaesCommerce.entities.User;
 import com.novaes.NovaesCommerce.projections.UserDetailsProjection;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -26,4 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 				WHERE tb_user.email = :email
 			""")
 	List<UserDetailsProjection> searchUserAndRolesByEmail(String email);
+        
+        Optional<User> findByEmail(String email);
+        
 }
