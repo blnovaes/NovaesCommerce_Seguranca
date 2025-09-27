@@ -4,6 +4,7 @@
  */
 package com.novaes.NovaesCommerce.services;
 
+import com.novaes.NovaesCommerce.dto.CategoryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.novaes.NovaesCommerce.dto.ProductDTO;
+import com.novaes.NovaesCommerce.dto.ProductMinDTO;
+import com.novaes.NovaesCommerce.entities.Category;
 import com.novaes.NovaesCommerce.entities.Product;
 import com.novaes.NovaesCommerce.repositories.ProductRepository;
 import com.novaes.NovaesCommerce.services.exceptions.DatabaseException;
@@ -24,7 +27,6 @@ import jakarta.persistence.EntityNotFoundException;
  *
  * @author blnov
  */
-
 @Service
 public class ProductService {
 
@@ -39,9 +41,9 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductDTO> findAll(String name, Pageable pageable) {
+    public Page<ProductMinDTO> findAll(String name, Pageable pageable) {
         Page<Product> result = repository.SearchByname(name, pageable);
-        return result.map(x -> new ProductDTO(x));
+        return result.map(x -> new ProductMinDTO(x));
     }
 
     @Transactional
@@ -59,21 +61,19 @@ public class ProductService {
             copyDtoToEntity(dto, entity);
             entity = repository.save(entity);
             return new ProductDTO(entity);
-        }
-        catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Recurso não encontrado");
         }
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(Long id) {
-    	if (!repository.existsById(id)) {
-    		throw new ResourceNotFoundException("Recurso não encontrado");
-    	}
-    	try {
-            repository.deleteById(id);    		
-    	}
-        catch (DataIntegrityViolationException e) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Recurso não encontrado");
+        }
+        try {
+            repository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Falha de integridade referencial");
         }
     }
@@ -83,5 +83,11 @@ public class ProductService {
         entity.setDescription(dto.getDescription());
         entity.setPrice(dto.getPrice());
         entity.setImgUrl(dto.getImgUrl());
+        entity.getCategories().clear();
+        for (CategoryDTO catDTO : dto.getCategories()) {
+            Category cat =new Category();
+            cat.setId(catDTO.getId());
+            entity.getCategories().add(cat);
+        }
     }
 }

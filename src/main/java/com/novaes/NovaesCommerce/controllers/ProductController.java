@@ -5,6 +5,7 @@
 package com.novaes.NovaesCommerce.controllers;
 
 import com.novaes.NovaesCommerce.dto.ProductDTO;
+import com.novaes.NovaesCommerce.dto.ProductMinDTO;
 import com.novaes.NovaesCommerce.services.ProductService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -43,10 +44,10 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductDTO>> findAll(
+    public ResponseEntity<Page<ProductMinDTO>> findAll(
             @RequestParam(name = "name", defaultValue = "") String name,
             Pageable pageable) {
-        Page<ProductDTO> dto = service.findAll(name,pageable);
+        Page<ProductMinDTO> dto = service.findAll(name,pageable);
         return ResponseEntity.ok(dto);
     }
 
