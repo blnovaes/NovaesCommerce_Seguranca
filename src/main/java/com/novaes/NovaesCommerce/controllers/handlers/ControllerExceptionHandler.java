@@ -7,6 +7,7 @@ package com.novaes.NovaesCommerce.controllers.handlers;
 import com.novaes.NovaesCommerce.dto.CustomErrorDTO;
 import com.novaes.NovaesCommerce.dto.ValidationErrorDTO;
 import com.novaes.NovaesCommerce.services.exceptions.DatabaseException;
+import com.novaes.NovaesCommerce.services.exceptions.ForbiddenException;
 import com.novaes.NovaesCommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -46,6 +47,13 @@ public class ControllerExceptionHandler {
         for (FieldError f : e.getBindingResult().getFieldErrors()) {
             err.addError(f.getField(), f.getDefaultMessage());
         }
+        return ResponseEntity.status(status).body(err);
+    }
+    
+        @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<CustomErrorDTO> forbidden(ForbiddenException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 
