@@ -7,6 +7,7 @@ package com.novaes.NovaesCommerce.dto;
 import com.novaes.NovaesCommerce.entities.Order;
 import com.novaes.NovaesCommerce.entities.OrderItem;
 import com.novaes.NovaesCommerce.entities.OrderStatus;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ public class OrderDTO {
     private OrderStatus status;
     private ClientDTO client;
     private PaymentDTO payment;
+    
+    @NotEmpty(message ="Deve ter pelo menos um item")
     private List<OrderItemDTO> items = new ArrayList<>();
 
     public OrderDTO() {
